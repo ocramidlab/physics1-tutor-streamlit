@@ -5,6 +5,11 @@ from content.physics_topics import TOPICS
 
 initialize_session()
 
+st.session_state.conversation_state["use_llm"] = st.toggle(
+    "Usa valutazione LLM",
+    value=st.session_state.conversation_state.get("use_llm", False),
+)
+
 st.title("💬 Chat Tutor")
 
 topic = st.selectbox(
