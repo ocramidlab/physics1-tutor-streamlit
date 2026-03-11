@@ -1,4 +1,36 @@
-inematica") -> str:
+from content.physics_topics import TOPICS
+from content.diagnostic_questions import DIAGNOSTIC_QUESTIONS
+from core.prerequisite_checker import get_missing_prerequisites
+from core.response_evaluator import evaluate_open_answer
+from core.llm_client import evaluate_with_llm
+
+
+KEYWORD_MAP = {
+    "moto": "cinematica",
+    "velocita": "cinematica",
+    "velocità": "cinematica",
+    "accelerazione": "cinematica",
+    "forza": "dinamica",
+    "newton": "dinamica",
+    "energia": "lavoro_energia",
+    "lavoro": "lavoro_energia",
+    "urto": "quantita_moto",
+    "quantita di moto": "quantita_moto",
+    "quantità di moto": "quantita_moto",
+    "momento angolare": "rotazioni",
+    "rotazione": "rotazioni",
+    "gravitazione": "gravitazione",
+    "orbita": "gravitazione",
+    "termodinamica": "termodinamica",
+    "gas": "termodinamica",
+    "pressione": "fluidi",
+    "fluido": "fluidi",
+    "oscillazione": "oscillazioni",
+    "molla": "oscillazioni",
+}
+
+
+def detect_topic(user_input: str, fallback_topic: str = "cinematica") -> str:
     text = user_input.lower()
     for keyword, topic in KEYWORD_MAP.items():
         if keyword in text:
@@ -10,179 +42,179 @@ def build_diagnostic_step(topic_key: str) -> dict:
     diag = DIAGNOSTIC_QUESTIONS[topic_key]
     return {
         "phase": "diagnostic",
-                "question": diag["question"],
-                        "expected_concepts": diag["expected_concepts"],
-                                "response": (
-                                            f"Prima di procedere con **{TOPICS[topic_key]['label']}**, "
-                                                        f"verifichiamo un prerequisito importante.\n\n"
-                                                                    f"**Domanda diagnostica:** {diag['question']}"
-                                                                            ),
-                                                                        }
+        "question": diag["question"],
+        "expected_concepts": diag["expected_concepts"],
+        "response": (
+            f"Prima di procedere con **{TOPICS[topic_key]['label']}**, "
+            f"verifichiamo un prerequisito importante.\n\n"
+            f"**Domanda diagnostica:** {diag['question']}"
+        ),
+    }
 
 
-                                                                    def build_guided_step(topic_key: str) -> dict:
-                                                                        starter = TOPICS[topic_key]["starter_question"]
-                                                                            return {
-                                                                                "phase": "guided",
-                                                                                        "question": starter,
-                                                                                                "expected_concepts": [],
-                                                                                                        "response": (
-                                                                                                                    f"Bene, possiamo passare a **{TOPICS[topic_key]['label']}**.\n\n"
-                                                                                                                                f"Non ti do subito la soluzione completa.\n\n"
-                                                                                                                                            f"**Prima domanda guida:** {starter}"
-                                                                                                                                                    ),
-                                                                                                                                                }
+def build_guided_step(topic_key: str) -> dict:
+    starter = TOPICS[topic_key]["starter_question"]
+    return {
+        "phase": "guided",
+        "question": starter,
+        "expected_concepts": [],
+        "response": (
+            f"Bene, possiamo passare a **{TOPICS[topic_key]['label']}**.\n\n"
+            f"Non ti do subito la soluzione completa.\n\n"
+            f"**Prima domanda guida:** {starter}"
+        ),
+    }
 
 
-                                                                                                                                            def build_recovery_step(topic_key: str) -> dict:
-                                                                                                                                                diag = DIAGNOSTIC_QUESTIONS[topic_key]
-                                                                                                                                                return {
-                                                                                                                                                    "phase": "review",
-                                                                                                                                                            "question": diag["question"],
-                                                                                                                                                                    "expected_concepts": diag["expected_concepts"],
-                                                                                                                                                                            "response": (
-                                                                                                                                                                                        f"{diag['recovery_message']}\n\n"
-                                                                                                                                                                                                    f"Prova ora a rispondere di nuovo con parole tue, in modo un po' più esplicito."
-                                                                                                                                                                                                            ),
-                                                                                                                                                                                                        }
+def build_recovery_step(topic_key: str) -> dict:
+    diag = DIAGNOSTIC_QUESTIONS[topic_key]
+    return {
+        "phase": "review",
+        "question": diag["question"],
+        "expected_concepts": diag["expected_concepts"],
+        "response": (
+            f"{diag['recovery_message']}\n\n"
+            f"Prova ora a rispondere di nuovo con parole tue, in modo un po' più esplicito."
+        ),
+    }
 
 
-                                                                                                                                                                                                    def process_user_message(
-                                                                                                                                                                                                        user_input: str,
-                                                                                                                                                                                                        student_profile: dict,
-                                                                                                                                                                                                        current_topic: str,
-                                                                                                                                                                                                        conversation_state: dict,
-                                                                                                                                                                                                    ):
-                                                                                                                                                                                                        phase = conversation_state.get("phase", "initial")
+def process_user_message(
+    user_input: str,
+    student_profile: dict,
+    current_topic: str,
+    conversation_state: dict,
+):
+    phase = conversation_state.get("phase", "initial")
 
-                                                                                                                                                                                                        if phase == "initial":
-                                                                                                                                                                                                            detected_topic = detect_topic(user_input, fallback_topic=current_topic)
-                                                                                                                                                                                                            known_skills = student_profile.get("completed_topics", [])
-                                                                                                                                                                                                            missing = get_missing_prerequisites(detected_topic, known_skills)
+    if phase == "initial":
+        detected_topic = detect_topic(user_input, fallback_topic=current_topic)
+        known_skills = student_profile.get("completed_topics", [])
+        missing = get_missing_prerequisites(detected_topic, known_skills)
 
-                                                                                                                                                                                                            if missing:
-                                                                                                                                                                                                                step = build_diagnostic_step(detected_topic)
-                                                                                                                                                                                                                return {
-                                                                                                                                                                                                                    "topic": detected_topic,
-                                                                                                                                                                                                                    "mode": "diagnostic",
-                                                                                                                                                                                                                    "response": step["response"],
-                                                                                                                                                                                                                    "phase": step["phase"],
-                                                                                                                                                                                                                    "current_question": step["question"],
-                                                                                                                                                                                                                    "expected_concepts": step["expected_concepts"],
-                                                                                                                                                                                                                    "prerequisites_missing": missing,
-                                                                                                                                                                                                                }
+        if missing:
+            step = build_diagnostic_step(detected_topic)
+            return {
+                "topic": detected_topic,
+                "mode": "diagnostic",
+                "response": step["response"],
+                "phase": step["phase"],
+                "current_question": step["question"],
+                "expected_concepts": step["expected_concepts"],
+                "prerequisites_missing": missing,
+            }
 
-                                                                                                                                                                                                            step = build_guided_step(detected_topic)
-                                                                                                                                                                                                            return {
-                                                                                                                                                                                                                "topic": detected_topic,
-                                                                                                                                                                                                                "mode": "guided",
-                                                                                                                                                                                                                "response": step["response"],
-                                                                                                                                                                                                                "phase": step["phase"],
-                                                                                                                                                                                                                "current_question": step["question"],
-                                                                                                                                                                                                                "expected_concepts": step["expected_concepts"],
-                                                                                                                                                                                                                "prerequisites_missing": [],
-                                                                                                                                                                                                            }
+        step = build_guided_step(detected_topic)
+        return {
+            "topic": detected_topic,
+            "mode": "guided",
+            "response": step["response"],
+            "phase": step["phase"],
+            "current_question": step["question"],
+            "expected_concepts": step["expected_concepts"],
+            "prerequisites_missing": [],
+        }
 
-                                                                                                                                                                                                        if phase == "diagnostic" or phase == "review":
-                                                                                                                                                                                                            topic_key = current_topic
-                                                                                                                                                                                                            diag = DIAGNOSTIC_QUESTIONS[topic_key]
+    if phase == "diagnostic" or phase == "review":
+        topic_key = current_topic
+        diag = DIAGNOSTIC_QUESTIONS[topic_key]
 
-                                                                                                                                                                                                            llm_result = evaluate_with_llm(
-                                                                                                                                                                                                                topic_label=TOPICS[topic_key]["label"],
-                                                                                                                                                                                                                question=conversation_state.get("current_question", diag["question"]),
-                                                                                                                                                                                                                student_answer=user_input,
-                                                                                                                                                                                                            )
+        llm_result = evaluate_with_llm(
+            topic_label=TOPICS[topic_key]["label"],
+            question=conversation_state.get("current_question", diag["question"]),
+            student_answer=user_input,
+        )
 
-                                                                                                                                                                                                            if llm_result is not None:
-                                                                                                                                                                                                                evaluation = llm_result
-                                                                                                                                                                                                            else:
-                                                                                                                                                                                                                evaluation = evaluate_open_answer(
-                                                                                                                                                                                                                    answer=user_input,
-                                                                                                                                                                                                                    expected_concepts=diag["expected_concepts"],
-                                                                                                                                                                                                                    good_answer_markers=diag["good_answer_markers"],
-                                                                                                                                                                                                                )
+        if llm_result is not None:
+            evaluation = llm_result
+        else:
+            evaluation = evaluate_open_answer(
+                answer=user_input,
+                expected_concepts=diag["expected_concepts"],
+                good_answer_markers=diag["good_answer_markers"],
+            )
 
-                                                                                                                                                                                                            if evaluation["status"] == "ok":
-                                                                                                                                                                                                                step = build_guided_step(topic_key)
-                                                                                                                                                                                                                return {
-                                                                                                                                                                                                                    "topic": topic_key,
-                                                                                                                                                                                                                    "mode": "guided",
-                                                                                                                                                                                                                    "response": f"{evaluation['feedback']}\n\n{step['response']}",
-                                                                                                                                                                                                                                    "phase": step["phase"],
-                                                                                                                                                                                                                                    "current_question": step["question"],
-                                                                                                                                                                                                                                    "expected_concepts": step["expected_concepts"],
-                                                                                                                                                                                                                                    "prerequisites_missing": [],
-                                                                                                                                                                                                                                    "evaluation": evaluation,
-                                                                                                                                                                                                                                    "mark_topic_completed": True,
-                                                                                                                                                                                                                                }
+        if evaluation["status"] == "ok":
+            step = build_guided_step(topic_key)
+            return {
+                "topic": topic_key,
+                "mode": "guided",
+                "response": f"{evaluation['feedback']}\n\n{step['response']}",
+                "phase": step["phase"],
+                "current_question": step["question"],
+                "expected_concepts": step["expected_concepts"],
+                "prerequisites_missing": [],
+                "evaluation": evaluation,
+                "mark_topic_completed": True,
+            }
 
-                                                                                                                                                                                                                            if evaluation["status"] == "partial":
-                                                                                                                                                                                                                                starter = TOPICS[topic_key]["starter_question"]
-                                                                                                                                                                                                                                return {
-                                                                                                                                                                                                                                    "topic": topic_key,
-                                                                                                                                                                                                                                    "mode": "hint",
-                                                                                                                                                                                                                                    "response": (
-                                                                                                                                                                                                                                        f"{evaluation['feedback']}\n\n"
-                                                                                                                                                                                                                                                            f"Ti lascio un indizio ponte:\n"
-                                                                                                                                                                                                                                                            f"prova a collegare la tua risposta a questo punto chiave: "
-                                                                                                                                                                                                                                                            f"**{starter}**"
-                                                                                                                                                                                                                                                        ),
-                                                                                                                                                                                                                                                        "phase": "hint",
-                                                                                                                                                                                                                                                        "current_question": starter,
-                                                                                                                                                                                                                                                        "expected_concepts": [],
-                                                                                                                                                                                                                                                        "prerequisites_missing": [],
-                                                                                                                                                                                                                                                        "evaluation": evaluation,
-                                                                                                                                                                                                                                                    }
+        if evaluation["status"] == "partial":
+            starter = TOPICS[topic_key]["starter_question"]
+            return {
+                "topic": topic_key,
+                "mode": "hint",
+                "response": (
+                    f"{evaluation['feedback']}\n\n"
+                    f"Ti lascio un indizio ponte:\n"
+                    f"prova a collegare la tua risposta a questo punto chiave: "
+                    f"**{starter}**"
+                ),
+                "phase": "hint",
+                "current_question": starter,
+                "expected_concepts": [],
+                "prerequisites_missing": [],
+                "evaluation": evaluation,
+            }
 
-                                                                                                                                                                                                                                                step = build_recovery_step(topic_key)
-                                                                                                                                                                                                                                                return {
-                                                                                                                                                                                                                                                    "topic": topic_key,
-                                                                                                                                                                                                                                                    "mode": "review",
-                                                                                                                                                                                                                                                    "response": f"{evaluation['feedback']}\n\n{step['response']}",
-                                                                                                                                                                                                                                                                "phase": step["phase"],
-                                                                                                                                                                                                                                                                "current_question": step["question"],
-                                                                                                                                                                                                                                                                "expected_concepts": step["expected_concepts"],
-                                                                                                                                                                                                                                                                "prerequisites_missing": [],
-                                                                                                                                                                                                                                                                "evaluation": evaluation,
-                                                                                                                                                                                                                                                            }
+        step = build_recovery_step(topic_key)
+        return {
+            "topic": topic_key,
+            "mode": "review",
+            "response": f"{evaluation['feedback']}\n\n{step['response']}",
+            "phase": step["phase"],
+            "current_question": step["question"],
+            "expected_concepts": step["expected_concepts"],
+            "prerequisites_missing": [],
+            "evaluation": evaluation,
+        }
 
-                                                                                                                                                                                                                                                        if phase == "hint":
-                                                                                                                                                                                                                                                            starter = TOPICS[current_topic]["starter_question"]
-                                                                                                                                                                                                                                                            return {
-                                                                                                                                                                                                                                                                "topic": current_topic,
-                                                                                                                                                                                                                                                                "mode": "guided",
-                                                                                                                                                                                                                                                                "response": (
-                                                                                                                                                                                                                                                                    f"Proviamo ad avanzare di un passo.\n\n"
-                                                                                                                                                                                                                                                                    f"**Domanda guida:** {starter}\n\n"
-                                                                                                                                                                                                                                                                    f"Rispondi concentrandoti sul primo principio o sulla prima relazione utile del problema."
-                                                                                                                                                                                                                                                                ),
-                                                                                                                                                                                                                                                                "phase": "guided",
-                                                                                                                                                                                                                                                                "current_question": starter,
-                                                                                                                                                                                                                                                                "expected_concepts": [],
-                                                                                                                                                                                                                                                                "prerequisites_missing": [],
-                                                                                                                                                                                                                                                            }
+    if phase == "hint":
+        starter = TOPICS[current_topic]["starter_question"]
+        return {
+            "topic": current_topic,
+            "mode": "guided",
+            "response": (
+                f"Proviamo ad avanzare di un passo.\n\n"
+                f"**Domanda guida:** {starter}\n\n"
+                f"Rispondi concentrandoti sul primo principio o sulla prima relazione utile del problema."
+            ),
+            "phase": "guided",
+            "current_question": starter,
+            "expected_concepts": [],
+            "prerequisites_missing": [],
+        }
 
-                                                                                                                                                                                                                                                        if phase == "guided":
-                                                                                                                                                                                                                                                            return {
-                                                                                                                                                                                                                                                                "topic": current_topic,
-                                                                                                                                                                                                                                                                "mode": "guided",
-                                                                                                                                                                                                                                                                "response": (
-                                                                                                                                                                                                                                                                    "Sto seguendo la tua risposta dentro la fase guidata.\n\n"
-                                                                                                                                                                                                                                                                    "Prova a fare il primo passo esplicito del problema: "
-                                                                                                                                                                                                                                                                    "scrivi dati, incognite e legge fisica che pensi di usare."
-                                                                                                                                                                                                                                                                ),
-                                                                                                                                                                                                                                                                "phase": "guided",
-                                                                                                                                                                                                                                                                "current_question": "Quali sono dati, incognite e legge fisica utile?",
-                                                                                                                                                                                                                                                                "expected_concepts": [],
-                                                                                                                                                                                                                                                                "prerequisites_missing": [],
-                                                                                                                                                                                                                                                            }
+    if phase == "guided":
+        return {
+            "topic": current_topic,
+            "mode": "guided",
+            "response": (
+                "Sto seguendo la tua risposta dentro la fase guidata.\n\n"
+                "Prova a fare il primo passo esplicito del problema: "
+                "scrivi dati, incognite e legge fisica che pensi di usare."
+            ),
+            "phase": "guided",
+            "current_question": "Quali sono dati, incognite e legge fisica utile?",
+            "expected_concepts": [],
+            "prerequisites_missing": [],
+        }
 
-                                                                                                                                                                                                                                                        return {
-                                                                                                                                                                                                                                                            "topic": current_topic,
-                                                                                                                                                                                                                                                            "mode": "fallback",
-                                                                                                                                                                                                                                                            "response": "Ripartiamo dall'argomento corrente. Descrivimi il dubbio in una frase.",
-                                                                                                                                                                                                                                                                    "phase": "initial",
-                                                                                                                                                                                                                                                                            "current_question": None,
-                                                                                                                                                                                                                                                                                    "expected_concepts": [],
-                                                                                                                                                                                                                                                                                            "prerequisites_missing": [],
-                                                                                                                                                                                                                                                                                                }~
+    return {
+        "topic": current_topic,
+        "mode": "fallback",
+        "response": "Ripartiamo dall'argomento corrente. Descrivimi il dubbio in una frase.",
+        "phase": "initial",
+        "current_question": None,
+        "expected_concepts": [],
+        "prerequisites_missing": [],
+    }
