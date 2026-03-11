@@ -4,12 +4,13 @@ TOPICS = {
         "short_description": "Moto rettilineo e piano, velocità, accelerazione, grafici orari.",
         "prerequisites": ["algebra", "vettori"],
         "starter_question": "Quali grandezze descrivono completamente il moto nel problema che stai studiando?",
+        "diagnostic_required": True,
         "subtopics": [
             "moto rettilineo uniforme",
             "moto uniformemente accelerato",
             "moto in due dimensioni",
             "moto parabolico",
-            "moto circolare"
+            "moto circolare",
         ],
     },
     "dinamica": {
@@ -17,12 +18,13 @@ TOPICS = {
         "short_description": "Leggi di Newton, forze, attrito, vincoli.",
         "prerequisites": ["algebra", "vettori", "cinematica"],
         "starter_question": "Hai già individuato tutte le forze agenti sul corpo e disegnato un diagramma?",
+        "diagnostic_required": True,
         "subtopics": [
             "primo principio",
             "secondo principio",
             "terzo principio",
             "attrito",
-            "piano inclinato"
+            "piano inclinato",
         ],
     },
     "lavoro_energia": {
@@ -30,12 +32,13 @@ TOPICS = {
         "short_description": "Lavoro di una forza, energia cinetica, potenziale, conservazione.",
         "prerequisites": ["algebra", "vettori", "dinamica"],
         "starter_question": "Quale trasformazione energetica avviene tra stato iniziale e stato finale?",
+        "diagnostic_required": True,
         "subtopics": [
             "lavoro",
             "teorema dell'energia cinetica",
             "energia potenziale",
             "conservazione dell'energia",
-            "potenza"
+            "potenza",
         ],
     },
     "quantita_moto": {
@@ -43,12 +46,13 @@ TOPICS = {
         "short_description": "Impulso, conservazione della quantità di moto, urti.",
         "prerequisites": ["algebra", "vettori", "dinamica"],
         "starter_question": "Il sistema che stai considerando può essere trattato come isolato?",
+        "diagnostic_required": True,
         "subtopics": [
             "impulso",
             "quantità di moto",
             "urti elastici",
             "urti anelastici",
-            "centro di massa"
+            "centro di massa",
         ],
     },
     "rotazioni": {
@@ -56,12 +60,13 @@ TOPICS = {
         "short_description": "Momento torcente, inerzia, dinamica rotazionale.",
         "prerequisites": ["algebra", "vettori", "dinamica", "quantita_moto"],
         "starter_question": "Qual è l'asse di rotazione e quali forze producono momento rispetto ad esso?",
+        "diagnostic_required": True,
         "subtopics": [
             "cinematica rotazionale",
             "momento di una forza",
             "momento d'inerzia",
             "equilibrio rotazionale",
-            "rotolamento"
+            "rotolamento",
         ],
     },
     "gravitazione": {
@@ -69,12 +74,13 @@ TOPICS = {
         "short_description": "Legge di gravitazione universale, campo gravitazionale, orbite.",
         "prerequisites": ["algebra", "vettori", "dinamica", "lavoro_energia"],
         "starter_question": "La forza gravitazionale come dipende dalla distanza tra i corpi?",
+        "diagnostic_required": True,
         "subtopics": [
             "forza gravitazionale",
             "campo gravitazionale",
             "energia potenziale gravitazionale",
             "orbite",
-            "velocità di fuga"
+            "velocità di fuga",
         ],
     },
     "oscillazioni": {
@@ -82,11 +88,12 @@ TOPICS = {
         "short_description": "Moto armonico, molle, pendolo per piccole oscillazioni.",
         "prerequisites": ["algebra", "cinematica", "dinamica", "lavoro_energia"],
         "starter_question": "Qual è la grandezza che oscilla e quale forza di richiamo agisce?",
+        "diagnostic_required": True,
         "subtopics": [
             "moto armonico semplice",
             "molla",
             "pendolo",
-            "frequenza e periodo"
+            "frequenza e periodo",
         ],
     },
     "fluidi": {
@@ -94,12 +101,13 @@ TOPICS = {
         "short_description": "Pressione, statica dei fluidi, continuità, Bernoulli.",
         "prerequisites": ["algebra", "dinamica", "lavoro_energia"],
         "starter_question": "Quali grandezze del fluido sono note nel problema: pressione, velocità, quota, densità?",
+        "diagnostic_required": True,
         "subtopics": [
             "pressione",
             "legge di Stevino",
             "spinta di Archimede",
             "equazione di continuità",
-            "Bernoulli"
+            "Bernoulli",
         ],
     },
     "termodinamica": {
@@ -107,12 +115,13 @@ TOPICS = {
         "short_description": "Temperatura, calore, lavoro termodinamico, primo principio.",
         "prerequisites": ["algebra", "lavoro_energia"],
         "starter_question": "Stai analizzando una trasformazione isoterma, isobara, isocora o adiabatica?",
+        "diagnostic_required": True,
         "subtopics": [
             "gas ideali",
             "calore",
             "lavoro termodinamico",
             "primo principio",
-            "trasformazioni"
+            "trasformazioni",
         ],
     },
 }
