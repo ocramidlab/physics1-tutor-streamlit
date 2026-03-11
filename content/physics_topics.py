@@ -1,0 +1,118 @@
+TOPICS = {
+    "cinematica": {
+        "label": "Cinematica",
+        "short_description": "Moto rettilineo e piano, velocità, accelerazione, grafici orari.",
+        "prerequisites": ["algebra", "vettori"],
+        "starter_question": "Quali grandezze descrivono completamente il moto nel problema che stai studiando?",
+        "subtopics": [
+            "moto rettilineo uniforme",
+            "moto uniformemente accelerato",
+            "moto in due dimensioni",
+            "moto parabolico",
+            "moto circolare"
+        ],
+    },
+    "dinamica": {
+        "label": "Dinamica",
+        "short_description": "Leggi di Newton, forze, attrito, vincoli.",
+        "prerequisites": ["algebra", "vettori", "cinematica"],
+        "starter_question": "Hai già individuato tutte le forze agenti sul corpo e disegnato un diagramma?",
+        "subtopics": [
+            "primo principio",
+            "secondo principio",
+            "terzo principio",
+            "attrito",
+            "piano inclinato"
+        ],
+    },
+    "lavoro_energia": {
+        "label": "Lavoro ed Energia",
+        "short_description": "Lavoro di una forza, energia cinetica, potenziale, conservazione.",
+        "prerequisites": ["algebra", "vettori", "dinamica"],
+        "starter_question": "Quale trasformazione energetica avviene tra stato iniziale e stato finale?",
+        "subtopics": [
+            "lavoro",
+            "teorema dell'energia cinetica",
+            "energia potenziale",
+            "conservazione dell'energia",
+            "potenza"
+        ],
+    },
+    "quantita_moto": {
+        "label": "Quantità di moto e Urti",
+        "short_description": "Impulso, conservazione della quantità di moto, urti.",
+        "prerequisites": ["algebra", "vettori", "dinamica"],
+        "starter_question": "Il sistema che stai considerando può essere trattato come isolato?",
+        "subtopics": [
+            "impulso",
+            "quantità di moto",
+            "urti elastici",
+            "urti anelastici",
+            "centro di massa"
+        ],
+    },
+    "rotazioni": {
+        "label": "Rotazioni e Corpo Rigido",
+        "short_description": "Momento torcente, inerzia, dinamica rotazionale.",
+        "prerequisites": ["algebra", "vettori", "dinamica", "quantita_moto"],
+        "starter_question": "Qual è l'asse di rotazione e quali forze producono momento rispetto ad esso?",
+        "subtopics": [
+            "cinematica rotazionale",
+            "momento di una forza",
+            "momento d'inerzia",
+            "equilibrio rotazionale",
+            "rotolamento"
+        ],
+    },
+    "gravitazione": {
+        "label": "Gravitazione",
+        "short_description": "Legge di gravitazione universale, campo gravitazionale, orbite.",
+        "prerequisites": ["algebra", "vettori", "dinamica", "lavoro_energia"],
+        "starter_question": "La forza gravitazionale come dipende dalla distanza tra i corpi?",
+        "subtopics": [
+            "forza gravitazionale",
+            "campo gravitazionale",
+            "energia potenziale gravitazionale",
+            "orbite",
+            "velocità di fuga"
+        ],
+    },
+    "oscillazioni": {
+        "label": "Oscillazioni",
+        "short_description": "Moto armonico, molle, pendolo per piccole oscillazioni.",
+        "prerequisites": ["algebra", "cinematica", "dinamica", "lavoro_energia"],
+        "starter_question": "Qual è la grandezza che oscilla e quale forza di richiamo agisce?",
+        "subtopics": [
+            "moto armonico semplice",
+            "molla",
+            "pendolo",
+            "frequenza e periodo"
+        ],
+    },
+    "fluidi": {
+        "label": "Fluidi",
+        "short_description": "Pressione, statica dei fluidi, continuità, Bernoulli.",
+        "prerequisites": ["algebra", "dinamica", "lavoro_energia"],
+        "starter_question": "Quali grandezze del fluido sono note nel problema: pressione, velocità, quota, densità?",
+        "subtopics": [
+            "pressione",
+            "legge di Stevino",
+            "spinta di Archimede",
+            "equazione di continuità",
+            "Bernoulli"
+        ],
+    },
+    "termodinamica": {
+        "label": "Termodinamica",
+        "short_description": "Temperatura, calore, lavoro termodinamico, primo principio.",
+        "prerequisites": ["algebra", "lavoro_energia"],
+        "starter_question": "Stai analizzando una trasformazione isoterma, isobara, isocora o adiabatica?",
+        "subtopics": [
+            "gas ideali",
+            "calore",
+            "lavoro termodinamico",
+            "primo principio",
+            "trasformazioni"
+        ],
+    },
+}
